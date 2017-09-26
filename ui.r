@@ -17,25 +17,12 @@ dsSlim$Lea_Name[dsSlim$Lea_Name=="Lenoir County Public Schools"] <-
 dsSlim$Lea_Name[dsSlim$Lea_Name=="Carteret County Public Schools"] <-
     "Carteret County Schools"
 
-##dsSlim <<- dsSlim
-dsSlim <<- dsSlim[dsSlim$year==2015,]
+dsSlim <<- dsSlim
+##dsSlim <<- dsSlim[dsSlim$year==2015,]
 
 ## Load rds shapefile of school districts
-sds <- readRDS(file="sds.rds")
-sds@data$perPup <- NA
+sds <<- readRDS(file="sds.rds")
 
-for (district in 1:length(dsSlim$Lea_Name)) {
-    if (dsSlim$Lea_Name[district] %in% sds@data$NAME) {
-        matchI <- which(sds@data$NAME==dsSlim$Lea_Name[district])
-        sds@data$perPup[matchI] <- dsSlim$lea_state_perpupil[district]
-    }
-}
-
-sds <<- sds
-
-
-## combined
-##comb <<- merge(dsSlim, sds, by.x="Lea_Name", by.y="NAME")
 
 ## Define UI for applicaiton that draws a hist
 shinyUI(
@@ -56,9 +43,6 @@ shinyUI(
 
                         ),
                tabPanel("Map",
-                        sliderInput("mapYear", "Select Year",
-                                    min=2002, max=2016, value=2015,
-                                    animate=TRUE),
                         leafletOutput("map1")
                         )
                )
