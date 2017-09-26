@@ -5,6 +5,11 @@ shinyServer(
     function(input, output) {
 
 
+        ## Bar plot reacvie daata
+        fundingDataset <- reactive({
+            dsSlim %>%
+                filter(year == input$year)
+        })
 
         ## CharMeck TS Plot
         output$bar <- renderPlotly({
@@ -34,7 +39,7 @@ shinyServer(
         ## DAta
         output$bar2 <- renderPlotly({
 
-            p <- plot_ly(dsSlim, x=~Lea_Name, y=~lea_salary_expense_pct,
+            p <- plot_ly(fundingDataset(), x=~Lea_Name, y=~lea_salary_expense_pct,
                              name="Salary", type="bar") %>%
                                  add_trace(y=~lea_benefits_expense_pct,
                                            name="Benefits") %>%
@@ -55,7 +60,7 @@ shinyServer(
         ## DAta
         output$bar3 <- renderPlotly({
 
-            p <- plot_ly(dsSlim, x=~Lea_Name, y=~lea_federal_perpupil_num,
+            p <- plot_ly(fundingDataset(), x=~Lea_Name, y=~lea_federal_perpupil_num,
                              name="Fed", type="bar") %>%
                                  add_trace(y=~lea_state_perpupil_num,
                                            name="State") %>%
@@ -67,15 +72,17 @@ shinyServer(
 
         })
 
+        bins <- c(5000,6000,7000,8000,9000,10000,11000,12000,Inf)
+        ##bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
+        pal <- colorBin("YlOrRd", domain = sds$lea_state_perpupil_num, bins = bins)
 
         ## Map
         output$map1 <- renderLeaflet({
             leaflet() %>%
                 addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
-                addProviderTiles(providers$Esri.WorldImagery, group="Aerials") %>%
                 addPolygons(data=sds, group="Districts",
-                            weight=2, opacity=1, fillOpacity=0.1,
-                            popup="test")
+                            weight=2, opacity=1, fillOpacity=0.5,
+                            popup="test", fillColor=~pal(dsSlim$lea_state_perpupil_num))
         })
 
 

@@ -21,7 +21,18 @@ dsSlim <<- dsSlim
 ##dsSlim <<- dsSlim[dsSlim$year==2015,]
 
 ## Load rds shapefile of school districts
+sds <- readRDS(file="sds.rds")
+sds@data$perPup <- NA
 sds <<- readRDS(file="sds.rds")
+
+for (district in 1:length(dsSlim$Lea_Name)) {
+    if (dsSlim$Lea_Name[district] %in% sds@data$NAME) {
+        matchI <- which(sds@data$NAME==dsSlim$Lea_Name[district])
+        sds@data$perPup[matchI] <- dsSlim$lea_state_perpupil[district]
+    }
+}
+
+sds <<- sds
 
 
 ## Define UI for applicaiton that draws a hist
