@@ -1,0 +1,4 @@
+# schoolData
+This project uses the NC school funding data from [http://www.ncpublicschools.org/src/researchers/](http://www.ncpublicschools.org/src/researchers/).  The Shiny App is built to enable better visualization of funding differences across districts and across time.     
+
+**Note that this is personal project.  If you have any interest in contacting me about this project, please submit and 'Issue' through this github page, and DO NOT contact me at my work email. 
