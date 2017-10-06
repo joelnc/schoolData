@@ -17,7 +17,7 @@ dsSlim$Lea_Name[dsSlim$Lea_Name=="Lenoir County Public Schools"] <-
 dsSlim$Lea_Name[dsSlim$Lea_Name=="Carteret County Public Schools"] <-
     "Carteret County Schools"
 
-dsSlim <<- dsSlim
+dsSlim <<- dsSlim[dsSlim$Lea_Name!="Charter and Non-District Affiliated Schools",]
 ##dsSlim <<- dsSlim[dsSlim$year==2015,]
 
 ## Load rds shapefile of school districts
@@ -37,21 +37,34 @@ sds <<- sds
 
 ## Define UI for applicaiton that draws a hist
 shinyUI(
-    navbarPage(title="School App",
-               tabPanel("Graphs",
+    navbarPage(title="NC School Funding App",
+               tabPanel("Percentage Graphs",
                         fluidRow(
-                            selectInput("field", "Data to plot:",
-                                        names(dsSlim),
-                                        selected="lea_total_expense_num"),
-                            plotlyOutput("bar2"),
-                            sliderInput("year", "Select Year",
-                                        min=2002, max=2016, value=2015,
-                                        animate=TRUE)
+                            column(6,
+                                   sliderInput("year1", "Select Year",
+                                               min=2002, max=2016, value=2016,
+                                               animate=TRUE)
+                                   ),
+                            column(6,
+                                   selectInput("sort1", "Sort By: ",
+                                               c("Alphabetical" = "a",
+                                                 "Rev. Alpha." = "b",
+                                                 "Salary Pct" = "c",
+                                                 "Benefits Pct" = "d")
+                                               )
+                                   )
                             ),
+                        fluidRow(
+                            plotlyOutput("bar2")
+                            )
+                        ),
+               tabPanel("Per Pupil Graphs",
+                        sliderInput("year2", "Select Year",
+                                    min=2002, max=2016, value=2016,
+                                    animate=TRUE),
                         fluidRow(
                             plotlyOutput("bar3")
                             )
-
                         ),
                tabPanel("Map",
                         leafletOutput("map1")
