@@ -40,30 +40,47 @@ shinyUI(
     navbarPage(title="NC School Funding App",
                tabPanel("Percentage Graphs",
                         fluidRow(
-                            column(6,
+                            column(5,
                                    sliderInput("year1", "Select Year",
                                                min=2002, max=2016, value=2016,
                                                animate=TRUE)
                                    ),
-                            column(6,
+                            column(5,
                                    selectInput("sort1", "Sort By: ",
                                                c("Alphabetical" = "a",
-                                                 "Rev. Alpha." = "b",
-                                                 "Salary Pct" = "c",
-                                                 "Benefits Pct" = "d")
-                                               )
+                                                 "Salary Pct" = "b",
+                                                 "Benefits Pct" = "c")
+                                               ),
+                                    checkboxInput("rev1", "Reverse?",
+                                                 value=FALSE)
+                                   ),
+                            column(2
                                    )
                             ),
                         fluidRow(
-                            plotlyOutput("bar2")
+                            plotlyOutput("bar2", height=650)
                             )
                         ),
                tabPanel("Per Pupil Graphs",
-                        sliderInput("year2", "Select Year",
-                                    min=2002, max=2016, value=2016,
-                                    animate=TRUE),
                         fluidRow(
-                            plotlyOutput("bar3")
+                            column(5,
+                                   sliderInput("year2", "Select Year",
+                                               min=2002, max=2016, value=2016,
+                                               animate=TRUE)
+                                   ),
+                            column(6,
+                                   selectInput("sort2", "Sort By: ",
+                                               c("Alphabetical" = "a",
+                                                 "Federal" = "b",
+                                                 "State" = "c",
+                                                 "Local" = "d")
+                                               ),
+                                    checkboxInput("rev2", "Reverse?",
+                                                 value=FALSE)
+                                   )
+                            ),
+                        fluidRow(
+                            plotlyOutput("bar3", height=650)
                             )
                         ),
                tabPanel("Map",
