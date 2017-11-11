@@ -93,19 +93,90 @@ shinyServer(
         })
 
 
-        ## Mapping
-        bins <- c(5000,6000,7000,8000,9000,10000,11000,12000,Inf)
-        ##bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-        pal <- colorBin("YlOrRd", domain = sds$lea_state_perpupil_num, bins = bins)
 
-        ## Map
+        ## Mapping
+
+
+        ## Map State
+        pal <- colorNumeric("YlGnBu", domain = sds$StaPerPup)
         output$map1 <- renderLeaflet({
             leaflet() %>%
-                addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
-                addPolygons(data=sds, group="Districts",
-                            weight=2, opacity=1, fillOpacity=0.5,
-                            popup="test", fillColor=~pal(dsSlim$lea_state_perpupil_num))
+                ##addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
+                addTiles() %>%
+                    addPolygons(data=sds, group="State Per Pupil ($)",
+                                weight=2, opacity=1, fillOpacity=0.7,
+                                popup=~NAME, fillColor=~pal(StaPerPup)) %>%
+                      addLegend("bottomright", pal = pal, values = seq(5000,13000,100),
+                                title = "Per Pupil Spending", labFormat = labelFormat(prefix = "$"),
+                                opacity = 1)
         })
+
+        ## Map Local
+        pal2 <- colorNumeric("YlGnBu", domain = sds$LocPerPup)
+        output$map2 <- renderLeaflet({
+            leaflet() %>%
+                ##addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
+                addTiles() %>%
+                    addPolygons(data=sds, group="Local Per Pupil ($)",
+                                weight=2, opacity=1, fillOpacity=0.7,
+                                popup=~NAME, fillColor=~pal2(LocPerPup)) %>%
+                      addLegend("bottomright", pal = pal2, values = seq(500,6000,100),
+                                title = "Per Pupil Spending", labFormat = labelFormat(prefix = "$"),
+                                opacity = 1)
+        })
+
+        ## Map Fed
+        pal3 <- colorNumeric("YlGnBu", domain = sds$FedPerPup)
+        output$map3 <- renderLeaflet({
+            leaflet() %>%
+                ##addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
+                addTiles() %>%
+                    addPolygons(data=sds, group="Federal Per Pupil ($)",
+                                weight=2, opacity=1, fillOpacity=0.7,
+                                popup=~NAME, fillColor=~pal2(FedcPerPup)) %>%
+                      addLegend("bottomright", pal = pal3, values = seq(400,2900,100),
+                                title = "Per Pupil Spending", labFormat = labelFormat(prefix = "$"),
+                                opacity = 1)
+        })
+
+
+##         ## Mapping
+
+##         mD1 <- reactive({
+##             sds <- sds %>%
+##                 select(input$mapVar)
+##         })
+
+##         bins <- c(5000,6000,7000,8000,9000,10000,11000,12000,13000)
+##         ##bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
+## ##        pal <- colorBin("YlOrRd", domain = sds$StaPerPup, bins = bins)
+## ##        pal <- colorNumeric("YlGnBu", domain = sds$StaPerPup)
+##         pal <- colorNumeric("YlGnBu", domain = c(500,13000))
+
+##         ## Map
+##         output$map1 <- renderLeaflet({
+##             leaflet() %>%
+##                 ##addProviderTiles(providers$OpenStreetMap.Mapnik, group="Streets") %>%
+##                 addTiles() %>%
+##                     addPolygons(data=sds, group="State Per Pupil ($)",
+##                                 weight=2, opacity=1, fillOpacity=0.7,
+##                                 popup=~NAME, fillColor=~pal(StaPerPup)) %>%
+##                     addPolygons(data=sds, group="Local Per Pupil ($)",
+##                                                 weight=2, opacity=1, fillOpacity=0.7,
+##                                                 popup="test", fillColor=~pal(LocPerPup)) %>%
+##                     addPolygons(data=sds, group="Federal Per Pupil ($)",
+##                                 weight=2, opacity=1, fillOpacity=0.7,
+##                                 popup="test", fillColor=~pal(FedPerPup)) %>%
+##                     addLayersControl(
+##                         overlayGroups=c("State Per Pupil ($)", "Local Per Pupil ($)",
+##                             "Federal Per Pupil ($)"),
+##                         options = layersControlOptions(collapsed=FALSE)) %>%
+##                       addLegend("bottomright", pal = pal, values = seq(500,13000,500),
+##                                 title = "Per Pupil Spending", labFormat = labelFormat(prefix = "$"),
+##                                 opacity = 1) %>%
+##                       hideGroup("Federal Per Pupil ($)") %>%
+##                       hideGroup("Local Per Pupil ($)")
+##         })
 
 
 
