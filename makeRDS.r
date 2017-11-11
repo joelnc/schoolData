@@ -3,13 +3,53 @@ library(leaflet)
 ##library(sp)
 library(rgdal)
 
-
-
-## School districts
+#### Format spatial data #######################################################
+## School districts basic geoprocessing
 sds <- readOGR(dsn=".", layer="tl_2013_37_unsd",
                  verbose=TRUE, GDAL1_integer64_policy = TRUE)
 
 sds <- spTransform(sds, CRS("+proj=longlat +datum=WGS84 +no_defs"))
+
+################################################################################
+## Read in and format funding file
+ds2 <- read.csv(file="funding.csv", sep=",", stringsAsFactors=FALSE,
+                header=T)
+
+ds2$key <- paste(ds2$Lea_Name, ds2$year)
+dsSlim <- ds2[!duplicated(ds2$key),]
+
+## Fix names from funding to match names from Tigris
+dsSlim$Lea_Name[dsSlim$Lea_Name=="Edgecombe County Public School"] <-
+    "Edgecombe County Schools"
+dsSlim$Lea_Name[dsSlim$Lea_Name=="Newton Conover City Schools"] <-
+    "Newton-Conover City Schools"
+dsSlim$Lea_Name[dsSlim$Lea_Name=="Lenoir County Public Schools"] <-
+    "Lenoir County Schools"
+dsSlim$Lea_Name[dsSlim$Lea_Name=="Carteret County Public Schools"] <-
+    "Carteret County Schools"
+
+## Drop charters for now...
+dsSlim <- dsSlim[dsSlim$Lea_Name!="Charter and Non-District Affiliated Schools",]
+
+## Pull 2016 data only...
+dsSlim <- dsSlim[dsSlim$year==2016,]
+################################################################################
+## Start adding funding data to spatial file
+sds@data$LocPerPup <- NA
+sds@data$StaPerPup <- NA
+sds@data$FedPerPup <- NA
+
+
+
+for (district in 1:length(dsSlim$Lea_Name)) {
+    if (dsSlim$Lea_Name[district] %in% sds@data$NAME) {
+        matchI <- which(sds@data$NAME==dsSlim$Lea_Name[district])
+        sds@data$LocPerPup[matchI] <- dsSlim$lea_local_perpupil[district]
+        sds@data$StaPerPup[matchI] <- dsSlim$lea_state_perpupil[district]
+        sds@data$FedPerPup[matchI] <- dsSlim$lea_federal_perpupil[district]
+    }
+}
+
 saveRDS(sds, file="sds.RDS")
 
 
